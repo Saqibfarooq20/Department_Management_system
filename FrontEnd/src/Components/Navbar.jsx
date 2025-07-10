@@ -43,7 +43,7 @@ const Navbar = ({ login, setIsLogin }) => {
     <li><Link to="/" onClick={handleLogout}>Logout</Link></li>
   )}
    {role === "USER" && (
-    <li><Link to="/user">User</Link></li>
+    <li><Link to="/user">User details</Link></li>
   )}
 </ul>
 
