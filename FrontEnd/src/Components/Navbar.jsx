@@ -1,4 +1,6 @@
 import React from "react";
+
+// ====================change======================
 import { Link, useNavigate } from "react-router-dom";
 import "../Styles/Navbar.css";
 import logo from "../assets/images.png";
@@ -32,7 +34,7 @@ const Navbar = ({ login, setIsLogin }) => {
   )}
 
   {role === "SUPER_ADMIN" && (
-    <li><Link to="/superadmin">Super Admin</Link></li>
+    <li><Link to="/superadmin">Super Admin hmari deepanshi</Link></li>
   )}
 
   {!login && (
@@ -43,7 +45,7 @@ const Navbar = ({ login, setIsLogin }) => {
     <li><Link to="/" onClick={handleLogout}>Logout</Link></li>
   )}
    {role === "USER" && (
-    <li><Link to="/user">User details</Link></li>
+    <li><Link to="/user">User</Link></li>
   )}
 </ul>
 
