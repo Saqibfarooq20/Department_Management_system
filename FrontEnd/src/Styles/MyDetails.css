@@ -1,0 +1,25 @@
+.my-details-container {
+  padding: 40px;
+  max-width: 600px;
+  margin: auto;
+  text-align: center;
+}
+
+.my-details-container h2 {
+  margin-bottom: 30px;
+  color: #003366;
+}
+
+.details-card {
+  background-color: #f7f9fc;
+  border: 1px solid #ddd;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: left;
+  font-size: 1.1rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+}
+
+.details-card p {
+  margin: 12px 0;
+}

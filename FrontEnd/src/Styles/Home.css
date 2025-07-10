@@ -1,0 +1,90 @@
+.career-home {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 60px 80px;
+  background: linear-gradient(135deg, #f9f871, #fcd34d, #f87171, #60a5fa, #34d399);
+  background-size: 400% 400%;
+  animation: gradientFlow 10s ease infinite;
+  flex-wrap: wrap;
+}
+
+@keyframes gradientFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.career-left {
+  flex: 1;
+  min-width: 320px;
+}
+
+.career-left h1 {
+  font-size: 38px;
+  color: #111;
+  margin-bottom: 10px;
+}
+
+.career-left h2 {
+  font-size: 24px;
+  color: #333;
+  font-weight: 400;
+  margin-bottom: 30px;
+}
+
+.explore-btn {
+  padding: 12px 24px;
+  font-size: 16px;
+  background: linear-gradient(to right, #ef4444, #facc15);
+  color: white;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.explore-btn:hover {
+  background: linear-gradient(to right, #dc2626, #eab308);
+}
+
+.career-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  min-width: 320px;
+}
+
+.image-box {
+  width: 280px;
+  border-radius: 20px;
+  overflow: hidden;
+  padding: 8px;
+  background: linear-gradient(to bottom right, #3b82f6, #10b981);
+}
+
+.image-box img {
+  width: 100%;
+  display: block;
+  border-radius: 12px;
+}
+
+/* Optional single-color themed backgrounds for reuse if needed */
+.red-bg {
+  background-color: #ef4444;
+}
+
+.yellow-bg {
+  background-color: #facc15;
+}
+
+.blue-bg {
+  background-color: #3b82f6;
+}
+
+.green-bg {
+  background-color: #10b981;
+}
