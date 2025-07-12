@@ -13,6 +13,27 @@ public class Department {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name;
+    private String description;
+
+    // ✅ added
+
+    private boolean active = true; // ✅ for activation
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL)
     @JsonIgnoreProperties("department")

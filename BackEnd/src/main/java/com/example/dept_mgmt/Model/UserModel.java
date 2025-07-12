@@ -14,6 +14,16 @@ public class UserModel {
     private String password;
     private String role;
 
+    private boolean active = true; // ✅ added
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     @ManyToOne
     @JoinColumn( name = "department_id", referencedColumnName = "id")
     @JsonIgnoreProperties("users") // 🔥 This will solve the issue

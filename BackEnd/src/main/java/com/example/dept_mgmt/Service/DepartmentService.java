@@ -10,27 +10,43 @@ import java.util.List;
 @Service
 public class DepartmentService {
 
-
     @Autowired
     private DeparmentRepository departmentRepository;
 
-    public List<Department> getAllDepartment (){
+    public List<Department> getAllDepartment() {
         return departmentRepository.findAll();
     }
 
-    public Department getDepartment (Long id)
-    {
+    public Department getDepartment(Long id) {
         return departmentRepository.findById(id).orElse(null);
     }
 
-    public Department addDepartment (Department department)
-    {
+    public Department updateDepartment(Long id, Department updatedDept) {
+        Department department = departmentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Department not found with ID: " + id));
+
+        department.setName(updatedDept.getName());
+        department.setDescription(updatedDept.getDescription()); // ✅ Also update description
+
+        return departmentRepository.save(department);
+    }
+
+    public void setDepartmentStatus(Long id, boolean status) {
+        Department dept = departmentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Department not found"));
+        dept.setActive(status);
+        departmentRepository.save(dept);
+    }
+
+    public List<Department> getAllActiveDepartments() {
+        return departmentRepository.findByActiveTrue();
+    }
+
+    public Department addDepartment(Department department) {
         return departmentRepository.save(department);
     }
 
     public void deleteDepartment(Long id) {
         departmentRepository.deleteById(id);
     }
-
-
 }

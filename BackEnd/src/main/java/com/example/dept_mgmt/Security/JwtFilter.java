@@ -29,6 +29,7 @@ public class JwtFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String authHeader = request.getHeader("Authorization");
+        String requestURI = request.getRequestURI();
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
@@ -36,26 +37,34 @@ public class JwtFilter extends OncePerRequestFilter {
             if (!jwtUtil.isValidToken(token)) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().write("Invalid or Expired Token");
+                System.out.println("⛔ Invalid or expired token on URI: " + requestURI);
                 return;
             }
 
-            // ✅ Extract values from token
             String email = jwtUtil.extractEmail(token);
-            String role = jwtUtil.extractRole(token); // Custom method to get claim "role"
+            List<String> roles = jwtUtil.extractAuthorities(token);
 
-            // ✅ Spring expects roles with "ROLE_" prefix
-            var authority = new SimpleGrantedAuthority("ROLE_" + role);
+            // Convert roles (like "ROLE_SUPER_ADMIN") into Spring authorities
+            List<SimpleGrantedAuthority> authorities = roles.stream()
+                    .map(SimpleGrantedAuthority::new)
+                    .toList();
 
             var authToken = new UsernamePasswordAuthenticationToken(
                     email,
                     null,
-                    List.of(authority)
+                    authorities
             );
 
             SecurityContextHolder.getContext().setAuthentication(authToken);
-
-            // Optional
             request.setAttribute("email", email);
+
+            // ✅ Debug Logs
+            System.out.println("✅ JwtFilter - Authenticated request");
+            System.out.println("   URI: " + requestURI);
+            System.out.println("   User: " + email);
+            System.out.println("   Authorities: " + authorities);
+        } else {
+            System.out.println("⚠️ JwtFilter - No Authorization header for URI: " + requestURI);
         }
 
         filterChain.doFilter(request, response);

@@ -59,19 +59,48 @@ public class UserService {
     }
 
     // ✅ Update user (encrypt new password)
-    public UserModel updateUser(UserModel userModel, Long id) {
-        UserModel existUser = userRepository.findById(id).orElse(null);
-        if (existUser != null) {
-            existUser.setName(userModel.getName());
-            existUser.setDepartment(userModel.getDepartment());
-            existUser.setPassword(passwordEncoder.encode(userModel.getPassword())); // encrypt new password
-            return userRepository.save(existUser);
+    public UserModel updateUser(Long id, UserModel updatedUser) {
+        UserModel existingUser = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+
+        existingUser.setName(updatedUser.getName());
+        existingUser.setEmail(updatedUser.getEmail());
+        existingUser.setRole(updatedUser.getRole());
+        existingUser.setActive(updatedUser.isActive());
+        existingUser.setDepartment(updatedUser.getDepartment());
+
+        // 👇 Only update password if provided
+        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
+            existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
         }
-        return null;
+
+        return userRepository.save(existingUser);
+    }
+
+
+    public void setUserStatus(Long id, boolean status) {
+        UserModel user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setActive(status);
+        userRepository.save(user);
+    }
+    public List<UserModel> getAllActiveUsers() {
+        return userRepository.findByActiveTrue();
     }
 
     // ✅ Delete user
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
+    }
+
+    public UserModel findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    public List<UserModel> getUsersByRole(String role) {
+        return userRepository.findByRole(role);
+    }
+
+    public List<UserModel> getUsersByRoleAndDepartment(String role, Long deptId) {
+        return userRepository.findByRoleAndDepartmentId(role, deptId);
     }
 }

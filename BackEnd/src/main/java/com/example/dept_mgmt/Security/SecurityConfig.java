@@ -2,6 +2,7 @@ package com.example.dept_mgmt.Security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -30,9 +31,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // ✅ Use custom CORS config
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+
+                        // Public Endpoints
                         .requestMatchers(
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
@@ -40,9 +43,27 @@ public class SecurityConfig {
                                 "/api/login",
                                 "/api/addUser"
                         ).permitAll()
-                        .requestMatchers("/api/delete/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
-                        .requestMatchers("/api/users").hasAnyRole("ADMIN", "SUPER_ADMIN")
-                        .requestMatchers("/api/department/**").hasAnyRole("ADMIN", "SUPER_ADMIN")
+
+                        // Department: Authenticated GET, restricted POST/PUT/DELETE
+                        .requestMatchers(HttpMethod.GET, "/api/department/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/department/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_SUPER_ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/updateDepartment/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_SUPER_ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/department/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_SUPER_ADMIN")
+
+                        // User Management
+                        .requestMatchers("/api/delete/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_SUPER_ADMIN")
+                        .requestMatchers("/api/users").hasAnyAuthority("ROLE_ADMIN", "ROLE_SUPER_ADMIN")
+                        // 👇 THE CRITICAL FIX IS HERE
+                        .requestMatchers(HttpMethod.PUT, "/api/updateUser/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_SUPER_ADMIN")
+
+                        // Activation Endpoints
+                        .requestMatchers(HttpMethod.POST, "/api/department/save").hasAnyAuthority("ROLE_ADMIN", "ROLE_SUPER_ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/department/activate/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_SUPER_ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/department/deactivate/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_SUPER_ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/user/activate/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_SUPER_ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/user/deactivate/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_SUPER_ADMIN")
+
+                        // All other requests
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
@@ -50,14 +71,13 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // ✅ Fix CORS error
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173")); // Frontend origin
+        config.setAllowedOrigins(List.of("http://localhost:5173")); // Your frontend origin
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(true); // Important if you're using cookies or Authorization headers
+        config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
